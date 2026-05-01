@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class Attached : MonoBehaviour
 {
@@ -9,48 +10,63 @@ public class Attached : MonoBehaviour
 
     private bool isAttached = false;
     private bool everDetached = false;
+
     private Rigidbody rb;
     private Collider col;
-    [SerializeField] private string interactableLayerName = "Interactable"; // Layer to switch to when detached
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
+
+    [SerializeField] private string interactableLayerName = "Interactable";
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody>(); // Add Rigidbody if missing
-        }
+            rb = gameObject.AddComponent<Rigidbody>();
 
         col = GetComponent<Collider>();
         if (col == null)
-        {
-            col = gameObject.AddComponent<BoxCollider>(); // Add a default collider if missing
-        }
+            col = gameObject.AddComponent<BoxCollider>();
+
+        grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+    }
+
+    void OnEnable()
+    {
+        if (grabInteractable != null)
+            grabInteractable.selectEntered.AddListener(OnGrabbed);
+    }
+
+    void OnDisable()
+    {
+        if (grabInteractable != null)
+            grabInteractable.selectEntered.RemoveListener(OnGrabbed);
     }
 
     void Start()
     {
         if (startAttached)
-        {
             Attach();
-        }
     }
 
     void FixedUpdate()
     {
         if (isAttached && anchorPoint != null)
         {
-            // MovePosition is the correct way to move a kinematic RB
             rb.MovePosition(anchorPoint.position);
             rb.MoveRotation(anchorPoint.rotation);
 
-            // Only reset velocity if the RB is NOT kinematic to avoid warnings
             if (!rb.isKinematic)
             {
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
             }
         }
+    }
+
+    private void OnGrabbed(SelectEnterEventArgs args)
+    {
+        if (isAttached)
+            Detach();
     }
 
     public void Attach()
@@ -62,7 +78,7 @@ public class Attached : MonoBehaviour
         rb.isKinematic = true;
         rb.useGravity = false;
 
-        col.isTrigger = true; // Prevent collisions while attached
+        col.isTrigger = true;
     }
 
     public void Detach()
@@ -76,16 +92,12 @@ public class Attached : MonoBehaviour
         rb.useGravity = true;
         col.isTrigger = false;
 
-        // Ensure this layer matches what your Player script is looking for
         int newLayer = LayerMask.NameToLayer(interactableLayerName);
+
         if (newLayer != -1)
-        {
             gameObject.layer = newLayer;
-        }
         else
-        {
             Debug.LogWarning("Layer " + interactableLayerName + " not found in Tags & Layers!");
-        }
     }
 
     public bool IsAttached()

@@ -25,7 +25,7 @@ public class CauldronMix : MonoBehaviour
     [SerializeField] private Light ritualLight;
     [SerializeField] private float lightFadeSpeed = 2f;
     [SerializeField] private float targetLightIntensity = 1f;
-
+    public bool IsRitualComplete => isRitualComplete;
     private Renderer liquidRenderer;
     private bool isRitualComplete = false;
     private bool lightActivated = false;

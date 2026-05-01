@@ -1,37 +1,24 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Required for changing scenes
-using UnityEngine.UI; // Optional: for "Press E" text
+using UnityEngine.SceneManagement;
 
 public class BedInteract : MonoBehaviour
 {
-    public string sceneToLoad;
-    public float interactionRange = 3f;
-    public Transform player;        // Drag your Player object here
+    [Header("Scene Settings")]
+    [SerializeField] private string sceneToLoad = "Space";
 
-    [Header("UI (Optional)")]
-    public GameObject interactText; // A UI Text object that says "Press E to Enter"
-
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        if (player == null) return;
+        // Log every touch to help you debug
+        Debug.Log("Bed Trigger touched by: " + other.name + " with Tag: " + other.tag);
 
-        float distance = Vector3.Distance(transform.position, player.position);
-
-        if (distance <= interactionRange)
+        if (other.CompareTag("Player"))
         {
-            // Show the "Press E" text if you have one
-            if (interactText != null) interactText.SetActive(true);
-
-            // Check for key press
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                ChangeScene();
-            }
+            Debug.Log("Player detected! Attempting to load scene: " + sceneToLoad);
+            ChangeScene();
         }
         else
         {
-            // Hide the text when you walk away
-            if (interactText != null) interactText.SetActive(false);
+            Debug.LogWarning("Object touched the bed, but it wasn't tagged 'Player'.");
         }
     }
 
@@ -39,11 +26,19 @@ public class BedInteract : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(sceneToLoad))
         {
-            SceneManager.LoadScene(sceneToLoad);
+            // Check if the scene actually exists in the Build Settings before loading
+            if (Application.CanStreamedLevelBeLoaded(sceneToLoad))
+            {
+                SceneManager.LoadScene(sceneToLoad);
+            }
+            else
+            {
+                Debug.LogError("CANNOT LOAD SCENE: '" + sceneToLoad + "' is not in your Build Settings!");
+            }
         }
         else
         {
-            Debug.LogError("Scene name is empty! Please type a scene name in the Inspector.");
+            Debug.LogError("Scene name is empty in the Inspector!");
         }
     }
 }

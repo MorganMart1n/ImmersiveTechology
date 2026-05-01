@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "XRI Default Input Actions",
     "maps": [
         {
@@ -2068,6 +2069,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Fly",
+                    "type": "Button",
+                    "id": "0a7c15de-48a8-4e3a-ab2a-28f568523dee",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -2376,6 +2386,17 @@
                     "processors": "ScaleVector2(x=0),StickDeadzone",
                     "groups": "",
                     "action": "Translate Manipulation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b9f2d35-9f1b-4930-8afb-d9ba4ca8e9af",
+                    "path": "<XRController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fly",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

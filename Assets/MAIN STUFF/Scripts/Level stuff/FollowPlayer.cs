@@ -8,27 +8,35 @@ public sealed class CompanionFollow : MonoBehaviour
     [SerializeField] private float rotationSpeed = 8f;
 
     [Header("Offset Settings")]
-    [SerializeField] private Vector3 followOffset = new Vector3(1.5f, 1.2f, 2.5f); // Relative to player's front
-    [SerializeField] private Vector3 lookOffset = new Vector3(0, 1.6f, 0); // Aim at eyes/head
+    [SerializeField] private Vector3 followOffset = new Vector3(1.5f, 1.2f, 2.5f);
+    [SerializeField] private Vector3 lookOffset = new Vector3(0, 1.6f, 0);
 
     [Header("Hover Animation")]
     [SerializeField] private float hoverAmplitude = 0.15f;
     [SerializeField] private float hoverFrequency = 2.0f;
 
+    // The "Switch" to start following
+    private bool isTriggered = false;
+
     private void Update()
     {
-        if (playerTransform == null) return;
+        // Only run the movement logic if the player has touched the trigger
+        if (!isTriggered || playerTransform == null) return;
 
         HandleMovement();
         HandleLookAtPlayer();
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("I was touched by: " + other.gameObject.name); // Add this!
+
+            isTriggered = true;
+    
+    }
 
     private void HandleMovement()
     {
-        // Position the companion based on where the player is facing
         Vector3 targetPosition = playerTransform.TransformPoint(followOffset);
-
-        // Gentle floating bob
         float hoverY = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
         targetPosition.y += hoverY;
 
@@ -37,16 +45,12 @@ public sealed class CompanionFollow : MonoBehaviour
 
     private void HandleLookAtPlayer()
     {
-        // Calculate the direction from the companion to the player's head area
         Vector3 targetPoint = playerTransform.position + lookOffset;
         Vector3 direction = targetPoint - transform.position;
 
         if (direction != Vector3.zero)
         {
-            // Create a rotation that faces the player
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-
-            // Smoothly rotate to face them
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }

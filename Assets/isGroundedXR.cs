@@ -19,12 +19,12 @@ public class XRGroundCheck : MonoBehaviour
         {
             if (characterController.isGrounded)
             {
-                Debug.Log("Player is grounded");
+
                 // Enable movement or jump here
             }
             else
             {
-                Debug.Log("Player is NOT grounded");
+              
                 // Apply gravity or disable movement here
             }
         }

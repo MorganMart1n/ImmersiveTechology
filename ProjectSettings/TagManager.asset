@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Anchor
+  - eat
   layers:
   - Default
   - TransparentFX
@@ -13,9 +14,9 @@ TagManager:
   - Water
   - UI
   - Floor
-  - 
-  - 
-  - 
+  - Interactable
+  - Grab
+  - Turn
   - 
   - 
   - 
